@@ -1,0 +1,34 @@
+services:
+  aws-postgres:
+    image: postgres:latest
+    container_name: aws-postgres
+    environment:
+      POSTGRES_USER: aws-user
+      POSTGRES_PASSWORD: aws-password
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./aws-postgres.init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  azure-postgres:
+    image: postgres:latest
+    container_name: azure-postgres
+    environment:
+      POSTGRES_USER: azure-user
+      POSTGRES_PASSWORD: azure-password
+    ports:
+      - "5433:5432"
+    volumes:
+      - ./azure-postgres.init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    depends_on:
+      - aws-postgres
+      - azure-postgres
