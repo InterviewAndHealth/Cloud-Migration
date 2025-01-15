@@ -1,0 +1,34 @@
+services:
+  source-redis:
+    image: redis/redis-stack:latest
+    container_name: source-redis
+    ports:
+      - "6379:6379"
+      - "8001:8001"
+
+  destination-redis:
+    image: redis/redis-stack:latest
+    container_name: destination-redis
+    ports:
+      - "6380:6379"
+      - "8002:8001"
+
+  redis-data-loader:
+    image: redis/redis-stack:latest
+    container_name: redis-data-loader
+    depends_on:
+      - source-redis
+    entrypoint: >
+      bash -c "
+      sleep 5 &&
+      redis-cli -h source-redis -p 6379 SET key1 value1 &&
+      redis-cli -h source-redis -p 6379 SET key2 value2 &&
+      redis-cli -h source-redis -p 6379 SET key3 value3 &&
+      redis-cli -h source-redis -p 6379 SET super_key1:sub_key1 value1 &&
+      redis-cli -h source-redis -p 6379 SET super_key1:sub_key2 value2 &&
+      redis-cli -h source-redis -p 6379 SET super_key1:sub_key3 value3 &&
+      redis-cli -h source-redis -p 6379 SET super_key2:sub_key1 value1 &&
+      redis-cli -h source-redis -p 6379 SET super_key2:sub_key2 value2 &&
+      redis-cli -h source-redis -p 6379 SET super_key2:sub_key3 value3 &&
+      redis-cli -h source-redis -p 6379 SET key_ttl_30_min value1 EX 1800
+      "

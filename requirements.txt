@@ -1,1 +1,2 @@
 -r postgres/requirements.txt
+-r redis/requirements.txt
